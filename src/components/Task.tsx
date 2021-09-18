@@ -1,41 +1,45 @@
 import React from "react";
+import { TaskData, TaskStatus } from "../class/Task";
+import { useAppDispatch } from "../lib/hooks";
+import { archiveTask, pinTask } from "../lib/task";
 
 export type TaskProps = {
-  task: {
-    id: string
-    title: string
-    state: 'TASK_INBOX' | 'TASK_ARCHIVED' | 'TASK_PINNED'
-  }
-  onArchiveTask: (id: string) => void
-  onPinTask: (id: string) => void
-}
+  task: TaskData;
+};
 
-const Task: React.FC<TaskProps> = ({
-  task: {
-    id,
-    title, 
-    state
-  },
-  onArchiveTask,
-  onPinTask,
-}) => {
+const Task: React.FC<TaskProps> = ({ task: { id, title, status } }) => {
+  const dispatch = useAppDispatch();
+
+  const onArchiveTask = (id: string) => {
+    dispatch(archiveTask(id));
+  };
+
+  const onPinTask = (id: string) => {
+    dispatch(pinTask(id));
+  };
+
   return (
-    <div className={`list-item ${state}`}>
+    <div className={`list-item ${status}`}>
       <label className="checkbox">
         <input
           type="checkbox"
-          defaultChecked={state === 'TASK_ARCHIVED'}
+          checked={status === TaskStatus.TASK_ARCHIVED}
           disabled={true}
           name="checked"
         />
         <span className="checkbox-custom" onClick={() => onArchiveTask(id)} />
       </label>
       <div className="title">
-        <input type="text" value={title} readOnly={true} placeholder="Input title" />
+        <input
+          type="text"
+          value={title}
+          readOnly={true}
+          placeholder="Input title"
+        />
       </div>
 
-      <div className="actions" onClick={event => event.stopPropagation()}>
-        {state !== 'TASK_ARCHIVED' && (
+      <div className="actions" onClick={(event) => event.stopPropagation()}>
+        {status !== TaskStatus.TASK_ARCHIVED && (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
           <a onClick={() => onPinTask(id)}>
             <span className={`icon-star`} />
@@ -44,6 +48,6 @@ const Task: React.FC<TaskProps> = ({
       </div>
     </div>
   );
-}
+};
 
 export default Task;

@@ -1,35 +1,33 @@
 import React from "react";
-import { action } from '@storybook/addon-actions'
 
 import Task from "./Task";
+import { TaskStatus } from "../class/Task";
+import { Provider } from "react-redux";
+import { store } from "../lib/store";
 
 export default {
   component: Task,
   title: 'Task',
+  decorators: [(story: any) => <Provider store={store}>{story()}</Provider>],
   excludeStories: /.*Data$/,
 };
 
 export const taskData: {
   id: string
   title: string
-  state: 'TASK_INBOX' | 'TASK_ARCHIVED' | 'TASK_PINNED'
+  status: TaskStatus
 } = {
   id: '1',
   title: 'Test Task',
-  state: 'TASK_INBOX',
+  status: TaskStatus.TASK_INBOX,
 }
 
-export const actionsData = {
-  onPinTask: action('onPinTask'),
-  onArchiveTask: action('onArchiveTask'),
-}
-
-export const Default = () => <Task task={{ ...taskData }} {...actionsData} />
+export const Default = () => <Task task={{ ...taskData }} />
 
 export const Pinned = () => (
-  <Task task={{ ...taskData, state: 'TASK_PINNED' }} {...actionsData} />
+  <Task task={{ ...taskData, status: TaskStatus.TASK_PINNED}} />
 )
 
 export const Archived = () => (
-  <Task task={{ ...taskData, state: 'TASK_ARCHIVED' }} {...actionsData} />
+  <Task task={{ ...taskData, status: TaskStatus.TASK_ARCHIVED }} />
 )
